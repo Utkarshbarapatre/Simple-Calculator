@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Simple Calculator</title>
+    <style>
+        body {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            margin: 0;
+            font-family: 'Arial', sans-serif;
+            transition: background-color 0.3s, color 0.3s;
+            position: relative;
+        }
+
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image: url('caljon.jpg'); 
+            background-size: cover;
+            filter: brightness(1); 
+            z-index: -1;
+            transition: filter 0.3s;
+        }
+
+        .light-mode::before {
+            filter: brightness(0.15); 
+        }
+
+        .light-mode {
+            background-color: #2C3E50;
+            color: #fff;
+        }
+
+#calculator {
+    background-color: #34495E;
+    border-radius: 15px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    overflow: hidden;
+    width: 300px;
+}
+
+#display {
+    background-color: #2C3E50;
+    color: #fff;
+    font-size: 1.5em;
+    padding: 10px;
+    text-align: right;
+    border-radius: 15px 15px 0 0;
+}
+
+#buttons {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+}
+
+button {
+    background-color: #3498DB;
+    border: none;
+    color: #fff;
+    font-size: 1.2em;
+    padding: 15px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+    border-radius: 15px;
+    border: 2px solid #2980B9;
+    margin: 5px;
+}
+
+button:hover {
+    background-color: #4daae0;
+}
+
+button.operator {
+    background-color: #E74C3C;
+    border: 2px solid #C0392B;
+}
+
+button.double {
+    grid-column: span 2;
+}
+
+#lightModeToggle {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    background-color: #2C3E50;
+    color: #fff;
+    border: none;
+    padding: 10px;
+    cursor: pointer;
+    border-radius: 5px;
+    transition: background-color 0.3s;
+}
+
+#lightModeToggle:hover {
+    background-color: #34495E;
+}
+</style>
+</head>
+<body class="light-mode"> 
+
+<div id="calculator">
+    <div id="display">0</div>
+    <div id="buttons">
+        <button onclick="appendNumber('7')">7</button>
+        <button onclick="appendNumber('8')">8</button>
+        <button onclick="appendNumber('9')">9</button>
+        <button class="operator" onclick="setOperator('/')">/</button>
+
+        <button onclick="appendNumber('4')">4</button>
+        <button onclick="appendNumber('5')">5</button>
+        <button onclick="appendNumber('6')">6</button>
+        <button class="operator" onclick="setOperator('*')">*</button>
+
+        <button onclick="appendNumber('1')">1</button>
+        <button onclick="appendNumber('2')">2</button>
+        <button onclick="appendNumber('3')">3</button>
+        <button class="operator" onclick="setOperator('-')">-</button>
+
+        <button onclick="backspace()">⌫</button>
+        <button class="double" onclick="appendNumber('0')">0</button>
+        <button onclick="appendDecimal('.')">.</button>
+        <button class="operator" onclick="setOperator('+')">+</button>
+
+        <button class="operator double" onclick="calculateResult()">=</button>
+    </div>
+</div>
+
+<button id="lightModeToggle" onclick="toggleLightMode()">Light Mode 🌞</button>
+
+<script>
+    let currentInput = '0';
+    let operator = null;
+    let previousInput = '0';
+
+    function updateDisplay() {
+        document.getElementById('display').innerText = currentInput;
+    }
+
+    function appendNumber(number) {
+        if (currentInput === '0' || currentInput === '-0') {
+            currentInput = number;
+        } else {
+            currentInput += number;
+        }
+        updateDisplay();
+    }
+
+    function appendDecimal() {
+        if (!currentInput.includes('.')) {
+            currentInput += '.';
+        }
+        updateDisplay();
+    }
+
+    function setOperator(newOperator) {
+        if (operator !== null) {
+            calculateResult();
+        }
+        previousInput = currentInput;
+        currentInput = '0';
+        operator = newOperator;
+        updateDisplay();
+    }
+
+    function backspace() {
+        currentInput = currentInput.slice(0, -1);
+        if (currentInput === '') {
+            currentInput = '0';
+        }
+        updateDisplay();
+    }
+
+    function calculateResult() {
+        let result;
+        const previous = parseFloat(previousInput);
+        const current = parseFloat(currentInput);
+
+        if (isNaN(previous) || isNaN(current)) {
+            return;
+        }
+
+        switch (operator) {
+            case '+':
+                result = previous + current;
+                break;
+            case '-':
+                result = previous - current;
+                break;
+            case '*':
+                result = previous * current;
+                break;
+            case '/':
+                result = previous / current;
+                break;
+            default:
+                return;
+        }
+
+        currentInput = result.toString();
+        operator = null;
+        updateDisplay();
+    }
+
+    function toggleLightMode() {
+        document.body.classList.toggle('light-mode');
+    }
+</script>
+
+</body>
+</html>
